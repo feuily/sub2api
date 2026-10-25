@@ -30,6 +30,8 @@ Dockerfile 和 Compose 的改动都可留在本目录。Compose 仍以仓库根�
 
 `backend/cmd` 下 Go 命令的目录说明、参数、配置要求和安全注意事项见
 [`docs/README.md`](./docs/README.md)。
+生产 Docker 环境不要直接套用本地默认 Compose/project；对应的线上服务检查、依赖联通和一次性运维容器操作见
+[`docs/online-docker.md`](./docs/online-docker.md)。
 
 ## 命令
 

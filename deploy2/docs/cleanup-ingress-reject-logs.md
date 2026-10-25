@@ -82,3 +82,7 @@ reason=invalid_key count=...
 5. 只有完成 rollout 和清理验证后，才按原 README 的独立流程评估 [`finalize-ingress-reject-cleanup.sql`](../../backend/scripts/finalize-ingress-reject-cleanup.sql)。该 SQL 是另一个可能移除历史 audit 数据/列的操作，不由此命令自动运行。
 
 不要把该命令当作通用日志清理工具；它只针对上述严格定义的历史拒绝记录。
+
+## 线上 Docker 环境
+
+生产镜像不包含此独立命令。应使用生产运行版本对应的可信源码编译 Linux 二进制，然后通过同一生产 Compose 项目启动临时工具容器；先 dry-run，审核输出、验证备份并确认所有应用实例已升级后，才考虑执行删除。完整示例见[线上 Docker 运维](./online-docker.md#5-运行-jwt-签发和日志清理工具)。

@@ -65,6 +65,8 @@ go -C backend run ./cmd/server --version
 
 正常服务至少需要可用的 PostgreSQL、Redis 和应用配置。Docker Compose 开发部署会用 `AUTO_SETUP=true` 并通过环境变量配置数据库、Redis 和端口。二进制部署通常先用 Web/CLI 向导创建 `config.yaml`。
 
+线上 Docker 环境的状态、日志、依赖连通性、重启及版本检查命令见[线上 Docker 运维](./online-docker.md#线上-docker-环境运维)。生产启停应通过部署时使用的 Compose project 管理；不要在容器里额外启动一个服务进程。
+
 ## 常用运行配置
 
 以下是理解启动行为的重要变量，完整变量定义和优先级以配置模块及部署模板为准：
