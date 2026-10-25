@@ -4,6 +4,14 @@
 
 线上 Docker 操作说明（包括 Compose 项目选择、容器内联通测试和一次性工具容器）见[线上 Docker 运维](./online-docker.md)。
 
+服务进程的完整启动调用链、Wire 依赖图、分层职责、设计模式和新增功能步骤见[`server-startup-architecture.md`](./server-startup-architecture.md)。
+
+HTTP 全局中间件顺序、认证/授权/审计/限流和 Gateway 专用链解析见[`server-middleware.md`](./server-middleware.md)。
+
+配置文件结构、环境变量覆盖、代码默认值及 `cmd/server` 的 bootstrap 配置加载流程见[`server-config-loading.md`](./server-config-loading.md)。
+
+新增上游平台的后端/前端接入清单、协议分流、账号生命周期、额度与测试矩阵见[`adding-platform.md`](./adding-platform.md)。
+
 ## 命令目录
 
 | 目录 | 用途 | 需要数据库 | 主要风险/注意事项 |

@@ -100,3 +100,7 @@ go generate ./cmd/server
 ```
 
 生成结果提交在 `wire_gen.go`。不要在生成文件中手工添加依赖或改清理流程。
+
+更完整的 `cmd/server` 调用链、模块装配、路由/middleware、后台任务生命周期和新功能开发指南，见[启动流程与架构导读](./server-startup-architecture.md)。
+中间件的全局执行顺序、认证和权限模型、Gateway 中间件链及扩展方式，另见[Server 中间件架构说明](./server-middleware.md)。
+配置来源优先级、默认值解析、JWT bootstrap 和 server 配置校验过程见[配置加载与默认值解析](./server-config-loading.md)。
