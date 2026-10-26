@@ -6,6 +6,8 @@
 
 服务进程的完整启动调用链、Wire 依赖图、分层职责、设计模式和新增功能步骤见[`server-startup-architecture.md`](./server-startup-architecture.md)。
 
+Wire 编译期代码生成、ProviderSet、Injector 及配置到 HTTP Server 的依赖装配细节见[Wire 依赖装配原理](./server-wire-dependency-injection.md)。
+
 HTTP 全局中间件顺序、认证/授权/审计/限流和 Gateway 专用链解析见[`server-middleware.md`](./server-middleware.md)。
 
 配置文件结构、环境变量覆盖、代码默认值及 `cmd/server` 的 bootstrap 配置加载流程见[`server-config-loading.md`](./server-config-loading.md)。

@@ -6,6 +6,8 @@
 
 配置文件来源、env 覆盖、代码默认值及 JWT bootstrap 配置流程另见[配置加载与默认值解析](./server-config-loading.md)。
 
+Wire injector、ProviderSet、生成代码与依赖图逐层构造原理另见[Wire 依赖装配原理](./server-wire-dependency-injection.md)。
+
 新增一个上游平台需要登记和扩展的后端/前端文件，以及协议、账号生命周期和额度能力检查，见[新增平台接入指南](./adding-platform.md)。
 
 ## 1. 一句话理解

@@ -10,11 +10,13 @@
 
 services:
   sub2api:
+    image: ${SUB2API_IMAGE:-sub2api:local}
     build:
       context: ..
       dockerfile: deploy2/Dockerfile
       args:
         NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmmirror.com}
+        SUB2API_SOURCE_SIGNATURE: ${SUB2API_SOURCE_SIGNATURE:-unknown}
     container_name: sub2api-dev
     restart: unless-stopped
     security_opt:

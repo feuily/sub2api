@@ -23,6 +23,10 @@
 并将该版本作为 Docker 构建参数；随后构建应用镜像、启动三个服务、等待健康检查，再验证
 PostgreSQL SQL 查询、Redis PING/认证及外网 HTTPS。外网检查默认访问 GitHub；
 若环境需走代理或外网不可用，可设置 `NETWORK_TEST_URL` 为可访问的 HTTPS 地址。
+开发 Compose 使用 `SUB2API_IMAGE` 作为应用镜像引用，默认为 `sub2api:local`；
+可用 `set-image` 将其写入环境文件，或用 `start --build-tag IMAGE` 临时指定镜像。
+构建时会将当前镜像源码签名写入镜像标签；`doctor` 据此报告镜像新鲜度。
+`start --no-build --platform PLATFORM` 会要求本地镜像存在、源码签名匹配且平台匹配，不会自动替换或重建该镜像。
 
 `sync-config` 会把 Dockerfile 副本也放入 `deploy2/`，开发 Compose 只引用此副本；
 Dockerfile 和 Compose 的改动都可留在本目录。Compose 仍以仓库根目录作为项目路径，
@@ -40,6 +44,7 @@ init-env               创建本地环境配置和随机密钥
 sync-config [--force]  同步 Compose YAML 和 env 文件到 deploy2
 check                  检查 deploy2 Compose/Dockerfile 副本与原文件差异
 start                  构建并启动全栈，等健康检查并执行连通性诊断
+                       支持 --no-build、--build-tag IMAGE、--platform PLATFORM、--open
 build [SERVICE...]     构建 Compose 镜像，并显示后端版本
 build-app              只构建应用镜像，并显示后端版本
 rebuild                无缓存重建应用，再强制重建应用容器
@@ -48,17 +53,26 @@ force-restart          不重新编译，强制重建容器
 stop                   停止服务但保留容器和数据
 down                   删除容器和网络，但保留数据
 status                 查看服务状态、健康状态和资源占用
-logs [SERVICE]         查看并持续跟踪日志
+logs [--detach] [SERVICE]
+                       查看日志；默认持续跟踪
 pull [SERVICE...]      拉取 Compose 服务镜像
 validate               只校验 Compose 配置，不启动服务
 doctor                 检查 Docker、Compose、容器健康和服务连通性
 connectivity           单独执行 PostgreSQL、Redis、外网检查
 check-mirror           检查应用构建与运行时镜像的 Registry manifest
 --mirror-list          列出可选镜像源和使用方法
-backup-db [FILE]       导出 PostgreSQL 自定义格式备份（文件权限 600）
+backup-db [options]    导出 custom、plain 或 gzip 格式 PostgreSQL 备份（权限 600）
 build-image [TAG]      用仓库 Dockerfile 独立构建镜像，默认 sub2api:local
+buildx [options]       用 Docker Buildx 构建镜像，支持多平台和 push/load
 export-image [TAG] [FILE]
                        导出本地镜像为 Docker tar 归档
+import-image FILE      导入 Docker 镜像归档
+list-images            列出本地 Sub2API 镜像
+set-image IMAGE        设置 SUB2API_IMAGE 运行镜像
+open / url             打开或打印本地服务地址
+config / edit-env      渲染 Compose 配置或编辑环境文件
+ps                     status 的别名
+reset-data             输入 reset 后删除 deploy 数据目录
 version                显示当前检测到的后端版本
 exec SERVICE [CMD...]  在服务容器执行命令；未给命令时进入 sh
 ```
@@ -67,12 +81,17 @@ exec SERVICE [CMD...]  在服务容器执行命令；未给命令时进入 sh
 
 ```bash
 ./deploy2/manage.sh --force-build start
+./deploy2/manage.sh start --build-tag sub2api:debug --platform linux/amd64
+./deploy2/manage.sh start --no-build --build-tag sub2api:debug
 ./deploy2/manage.sh start --pull
 ./deploy2/manage.sh --wait-timeout 300 start
 ./deploy2/manage.sh status
 ./deploy2/manage.sh logs sub2api
 ./deploy2/manage.sh doctor
 ./deploy2/manage.sh backup-db ./backups/sub2api.dump
+./deploy2/manage.sh backup-db --format gzip --output ./backups/sub2api.sql.gz
+./deploy2/manage.sh buildx --platform linux/amd64,linux/arm64 --tag sub2api:multi --push
+./deploy2/manage.sh import-image ./sub2api.tar
 ./deploy2/manage.sh exec sub2api sh
 ./deploy2/manage.sh build-image --force-build sub2api:debug
 ./deploy2/manage.sh export-image sub2api:debug ./sub2api-debug.tar
@@ -129,7 +148,9 @@ exec SERVICE [CMD...]  在服务容器执行命令；未给命令时进入 sh
 ./deploy2/manage.sh --file deploy/docker-compose.yml --env-file deploy/.env status
 ```
 
-也支持 `SUB2API_COMPOSE_FILE`、`ENV_FILE`、`COMPOSE_PROJECT_NAME`、`HEALTH_TIMEOUT`、
+也支持 `SUB2API_COMPOSE_FILE`、`SUB2API_IMAGE`、`ENV_FILE`、`COMPOSE_PROJECT_NAME`、`HEALTH_TIMEOUT`、
 `NETWORK_TEST_URL`、`IMAGE_TAG`、`TAIL_LINES`、`GOPROXY`、`GOSUMDB` 和 `NPM_CONFIG_REGISTRY`。
 需要 Docker Engine、Docker Compose v2 和 Bash。`rebuild` 只无缓存构建应用服务，
-不会重建 PostgreSQL/Redis 镜像；脚本不提供 `down -v` 等删除持久化数据的快捷操作。
+不会重建 PostgreSQL/Redis 镜像。`reset-data` 会删除 `deploy/data`、
+`deploy/postgres_data` 和 `deploy/redis_data`；必须在提示时输入 `reset` 才会执行。
+普通 `down` 仍只删除容器和网络，不会删除持久化数据。

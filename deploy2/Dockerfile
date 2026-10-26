@@ -105,11 +105,13 @@ FROM ${POSTGRES_IMAGE} AS pg-client
 # Stage 4: Final Runtime Image
 # -----------------------------------------------------------------------------
 FROM ${ALPINE_IMAGE}
+ARG SUB2API_SOURCE_SIGNATURE=unknown
 
 # Labels
 LABEL maintainer="Wei-Shaw <github.com/Wei-Shaw>"
 LABEL description="Sub2API - AI API Gateway Platform"
 LABEL org.opencontainers.image.source="https://github.com/Wei-Shaw/sub2api"
+LABEL io.sub2api.source_signature="${SUB2API_SOURCE_SIGNATURE}"
 
 # Install runtime dependencies
 RUN apk add --no-cache \
